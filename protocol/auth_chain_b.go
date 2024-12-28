@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"sort"
 
-	"github.com/v2rayA/shadowsocksR/tools"
+	"github.com/zhangheng0027/shadowsocksR/tools"
 )
 
 func init() {

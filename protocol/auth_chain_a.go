@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/v2rayA/shadowsocksR/ssr"
-	cipher2 "github.com/v2rayA/shadowsocksR/streamCipher"
-	"github.com/v2rayA/shadowsocksR/tools"
+	"github.com/zhangheng0027/shadowsocksR/ssr"
+	cipher2 "github.com/zhangheng0027/shadowsocksR/streamCipher"
+	"github.com/zhangheng0027/shadowsocksR/tools"
 )
 
 func init() {

@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	shadowsocksr "github.com/v2rayA/shadowsocksR"
-	"github.com/v2rayA/shadowsocksR/obfs"
-	"github.com/v2rayA/shadowsocksR/protocol"
-	"github.com/v2rayA/shadowsocksR/ssr"
-	cipher "github.com/v2rayA/shadowsocksR/streamCipher"
-	"github.com/v2rayA/shadowsocksR/tools"
-	"github.com/v2rayA/shadowsocksR/tools/socks"
+	"github.com/zhangheng0027/shadowsocksR"
+	"github.com/zhangheng0027/shadowsocksR/obfs"
+	"github.com/zhangheng0027/shadowsocksR/protocol"
+	"github.com/zhangheng0027/shadowsocksR/ssr"
+	cipher "github.com/zhangheng0027/shadowsocksR/streamCipher"
+	"github.com/zhangheng0027/shadowsocksR/tools"
+	"github.com/zhangheng0027/shadowsocksR/tools/socks"
 	"golang.org/x/net/proxy"
 	"net"
 	"net/url"
@@ -32,6 +32,8 @@ type SSR struct {
 	ProtocolParam   string
 	ProtocolData    interface{}
 	clientID        string
+
+	Remarks string
 }
 
 // NewSSR returns a shadowsocksr proxy, ssr://method:pass@host:port/query

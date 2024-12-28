@@ -8,8 +8,8 @@ import (
 	"crypto/rc4"
 	"encoding/binary"
 	"errors"
-	"github.com/v2rayA/shadowsocksR/tools"
-	"github.com/v2rayA/shadowsocksR/tools/leakybuf"
+	"github.com/zhangheng0027/shadowsocksR/tools"
+	"github.com/zhangheng0027/shadowsocksR/tools/leakybuf"
 	"math/rand"
 
 	"github.com/dgryski/go-camellia"
@@ -171,7 +171,7 @@ type NoneStream struct {
 	cipher.Stream
 }
 
-func (*NoneStream) XORKeyStream(dst, src []byte) () {
+func (*NoneStream) XORKeyStream(dst, src []byte) {
 	copy(dst, src)
 }
 

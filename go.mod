@@ -1,4 +1,4 @@
-module github.com/v2rayA/shadowsocksR
+module github.com/zhangheng0027/shadowsocksR
 
 go 1.12
 

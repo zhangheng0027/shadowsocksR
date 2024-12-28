@@ -3,9 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/v2rayA/shadowsocksR/client"
-	"golang.org/x/net/proxy"
+	"github.com/zhangheng0027/shadowsocksR/client"
 	"log"
 	"net/http"
 	"net/url"
@@ -43,27 +41,30 @@ func convertDialerURL(params Params) (s string, err error) {
 }
 
 func main() {
-	s, err := convertDialerURL(Params{
-		Method:        "none",
-		Passwd:        "123456",
-		Address:       "localhost",
-		Port:          "8083",
-		Obfs:          "plain",
-		ObfsParam:     "",
-		Protocol:      "auth_chain_a",
-		ProtocolParam: "100004:123",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	dialer, err := client.NewSSR(s, proxy.Direct, logrus.New())
+	//s, err := convertDialerURL(Params{
+	//	Method:        "none",
+	//	Passwd:        "123456",
+	//	Address:       "localhost",
+	//	Port:          "8083",
+	//	Obfs:          "plain",
+	//	ObfsParam:     "",
+	//	Protocol:      "auth_chain_a",
+	//	ProtocolParam: "100004:123",
+	//})
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//dialer, err := client.NewSSR(s, proxy.Direct, logrus.New())
+
+	dialer, err := client.NewSSR1("...")
+
 	if err != nil {
 		log.Fatal(err)
 	}
 	c := http.Client{
 		Transport: &http.Transport{Dial: dialer.Dial},
 	}
-	resp, err := c.Get("https://www.baidu.com")
+	resp, err := c.Get("https://www.google.com")
 	if err != nil {
 		log.Fatal(err)
 	}
