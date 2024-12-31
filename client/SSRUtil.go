@@ -33,7 +33,7 @@ func NewSSR3(url string, d proxy.Dialer, log *logrus.Logger) (*SSR, error) {
 	url = strings.TrimRight(url, "\n")
 	url = strings.TrimRight(url, "\r")
 	url = strings.TrimRight(url, " ")
-	url = decodeBase64ToStr(url)
+	url = DecodeBase64ToStr(url)
 
 	split := strings.Split(url, "?")
 	query, err := url2.ParseQuery(split[1])
@@ -44,13 +44,13 @@ func NewSSR3(url string, d proxy.Dialer, log *logrus.Logger) (*SSR, error) {
 	i := strings.Split(split[0], ":")
 	s := &SSR{
 		EncryptMethod:   i[3],
-		EncryptPassword: decodeBase64ToStr(i[5]),
+		EncryptPassword: DecodeBase64ToStr(i[5]),
 		addr:            i[0] + ":" + i[1],
 		Protocol:        i[2],
-		ProtocolParam:   decodeBase64ToStr(query.Get("protoparam")),
+		ProtocolParam:   DecodeBase64ToStr(query.Get("protoparam")),
 		Obfs:            i[4],
-		ObfsParam:       decodeBase64ToStr(query.Get("obfsparam")),
-		Remarks:         decodeBase64ToStr(query.Get("remarks")),
+		ObfsParam:       DecodeBase64ToStr(query.Get("obfsparam")),
+		Remarks:         DecodeBase64ToStr(query.Get("remarks")),
 		dialer:          d,
 		log:             log,
 	}
@@ -71,7 +71,7 @@ func NewSSR3(url string, d proxy.Dialer, log *logrus.Logger) (*SSR, error) {
 
 }
 
-func decodeBase64ToStr(val string) string {
+func DecodeBase64ToStr(val string) string {
 	// 补齐长度
 	switch len(val) % 4 {
 	case 1:
