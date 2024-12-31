@@ -25,7 +25,7 @@ func NewSSR2(url string, d proxy.Dialer) (*SSR, error) {
 }
 
 func NewSSR3(url string, d proxy.Dialer, log *logrus.Logger) (*SSR, error) {
-	if url[6:] != "ssr://" {
+	if url[:6] == "ssr://" {
 		url = url[6:]
 	}
 
