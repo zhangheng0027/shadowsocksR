@@ -2,8 +2,17 @@ package client
 
 import (
 	"encoding/base64"
+	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
+	shadowsocksr "github.com/zhangheng0027/shadowsocksR"
+	"github.com/zhangheng0027/shadowsocksR/obfs"
+	"github.com/zhangheng0027/shadowsocksR/protocol"
+	"github.com/zhangheng0027/shadowsocksR/ssr"
+	cipher "github.com/zhangheng0027/shadowsocksR/streamCipher"
+	"github.com/zhangheng0027/shadowsocksR/tools/socks"
 	"golang.org/x/net/proxy"
+	"net"
 	url2 "net/url"
 	"strings"
 )
@@ -84,4 +93,72 @@ func DecodeBase64ToStr(val string) string {
 	// 解码
 	decodeString, _ := base64.URLEncoding.DecodeString(val)
 	return string(decodeString)
+}
+
+func (s *SSR) DialProxy(network, addr string, d proxy.Dialer) (net.Conn, error) {
+	target := socks.ParseAddr(addr)
+	if target == nil {
+		return nil, errors.New("[ssr] unable to parse address: " + addr)
+	}
+
+	cipher, err := cipher.NewStreamCipher(s.EncryptMethod, s.EncryptPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	c, err := d.Dial("tcp", s.addr)
+	if err != nil {
+		return nil, fmt.Errorf("[ssr] dial to %s error: %w", s.addr, err)
+	}
+
+	ssrconn := shadowsocksr.NewSSTCPConn(c, cipher)
+	if ssrconn.Conn == nil || ssrconn.RemoteAddr() == nil {
+		return nil, errors.New("[ssr] nil connection")
+	}
+
+	// should initialize obfs/protocol now
+	tcpAddr := ssrconn.RemoteAddr().(*net.TCPAddr)
+	port := tcpAddr.Port
+
+	ssrconn.IObfs = obfs.NewObfs(s.Obfs)
+	if ssrconn.IObfs == nil {
+		return nil, errors.New("[ssr] unsupported obfs type: " + s.Obfs)
+	}
+
+	obfsServerInfo := &ssr.ServerInfo{
+		Host:   tcpAddr.IP.String(),
+		Port:   uint16(port),
+		TcpMss: 1460,
+		Param:  s.ObfsParam,
+	}
+	ssrconn.IObfs.SetServerInfo(obfsServerInfo)
+
+	ssrconn.IProtocol = protocol.NewProtocol(s.Protocol)
+	if ssrconn.IProtocol == nil {
+		return nil, errors.New("[ssr] unsupported protocol type: " + s.Protocol)
+	}
+
+	protocolServerInfo := &ssr.ServerInfo{
+		Host:   tcpAddr.IP.String(),
+		Port:   uint16(port),
+		TcpMss: 1460,
+		Param:  s.ProtocolParam,
+	}
+	ssrconn.IProtocol.SetServerInfo(protocolServerInfo)
+
+	if s.ObfsData == nil {
+		s.ObfsData = ssrconn.IObfs.GetData()
+	}
+	ssrconn.IObfs.SetData(s.ObfsData)
+
+	if s.ProtocolData == nil {
+		s.ProtocolData = ssrconn.IProtocol.GetData()
+	}
+	ssrconn.IProtocol.SetData(s.ProtocolData)
+	s.log.Printf("proxy %v <-> %v <-> %v\n", ssrconn.LocalAddr(), ssrconn.RemoteAddr(), target)
+	if _, err := ssrconn.Write(target); err != nil {
+		ssrconn.Close()
+		return nil, err
+	}
+	return ssrconn, err
 }
