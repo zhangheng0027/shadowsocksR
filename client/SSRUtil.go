@@ -155,7 +155,13 @@ func (s *SSR) DialProxy(network, addr string, d proxy.Dialer) (net.Conn, error) 
 		s.ProtocolData = ssrconn.IProtocol.GetData()
 	}
 	ssrconn.IProtocol.SetData(s.ProtocolData)
-	s.log.Printf("proxy %v <-> %v <-> %v\n", ssrconn.LocalAddr(), ssrconn.RemoteAddr(), target)
+
+	remote := ssrconn.RemoteAddr().String()
+	if s.Remarks != "" {
+		remote = s.Remarks
+	}
+
+	s.log.Printf("proxy %v <-> %v <-> %v\n", ssrconn.LocalAddr(), remote, target)
 	if _, err := ssrconn.Write(target); err != nil {
 		ssrconn.Close()
 		return nil, err
